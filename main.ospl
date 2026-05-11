@@ -1,0 +1,63 @@
+let __cext = foreign use "tcpExtension";
+
+let __createServer = foreign fn __cext "createServer" i32 { i32 };
+let __serverAccept = foreign fn __cext "serverAccept" ptr { i32 };
+let __cread = foreign fn __cext "CRead" u8 { ptr };
+let __cwrite1 = foreign fn __cext "CWrite1" i32 { ptr u8 };
+let __cflush = foreign fn __cext "CFlush" i32 { ptr };
+let __cclose = foreign fn __cext "CClose" void { ptr };
+
+def Connection = fn[__cread __cwrite1 __cflush](pointer:addr) -> scope{
+    next_byte: fn() -> addr
+    write_byte: fn(addr)
+    flush_buffer: fn()
+}
+{
+    def next_byte = fn[pointer __cread]() -> addr {
+        return foreign __cread(pointer);
+    };
+
+    def write_byte = fn[pointer __cwrite1](b:addr) {
+        do foreign __cwrite1(pointer  b);
+        return nul;
+    };
+
+    def flush_buffer = fn[pointer __cflush]() {
+        do foreign __cflush(pointer);
+        return nul;
+    };
+
+    return scope;
+};
+
+def serve_once = fn[Connection __createServer __serverAccept __cclose](
+    port:int
+    func:fn(@Connection)
+)
+{
+    let s = foreign __createServer(port);
+    let pointer = foreign __serverAccept(s);
+
+    let c = Connection(pointer);
+
+    do func(c);
+
+    do foreign __cclose(pointer);
+    return nul;
+};
+
+def serve_forever = fn[Connection __createServer __serverAccept __cclose](
+    port:int
+    func:fn(@Connection)
+)
+{
+    let s = foreign __createServer(port);
+    loop {
+        let pointer = foreign __serverAccept(s);
+        let c = Connection(pointer);
+        do func(c);
+        do foreign __cclose(pointer);
+    };
+
+    return nul;  # unreachable
+};

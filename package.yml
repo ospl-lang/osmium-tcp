@@ -1,0 +1,16 @@
+name: tcp
+version: 0.0.1
+
+includes:
+  modules:
+    library: !File main.ospl
+    binary: !File tests.ospl
+  packages: {}
+
+requires:
+  argparse: !Git
+    repo: "https://github.com/ospl-lang/files.git"
+
+extensions:
+  tcpExtension:
+    file: "extension.c"

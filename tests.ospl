@@ -1,0 +1,10 @@
+def TCP = use "library";
+let Connection = TCP.Connection;
+do TCP.serve_forever(8080  fn(c: @Connection) {
+    # simple ECHO program
+    let b = c.next_byte();
+    do c.write_byte(b);
+    do c.flush_buffer();
+
+    return nul;
+});
