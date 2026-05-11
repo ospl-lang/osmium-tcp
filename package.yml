@@ -7,9 +7,7 @@ includes:
     binary: !File tests.ospl
   packages: {}
 
-requires:
-  argparse: !Git
-    repo: "https://github.com/ospl-lang/files.git"
+requires: {}
 
 extensions:
   tcpExtension:
