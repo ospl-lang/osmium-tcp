@@ -3,8 +3,14 @@ version: 0.0.1
 
 includes:
   modules:
-    library: !File main.ospl
-    binary: !File tests.ospl
+    library:
+      at: !File main.ospl
+      require: []
+
+    binary:
+      at: !File tests.ospl
+      require: []
+
   packages: {}
 
 requires: {}
